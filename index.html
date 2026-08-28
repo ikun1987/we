@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>✨ 卡哇伊团队 ✨</title>
+<style>
+  :root {
+    --pink: #FFB6C1; --pink-deep: #FF8FAB;
+    --lavender: #E6E6FA; --mint: #B8F2E6;
+    --yellow: #FFF3B0; --peach: #FFE5D9;
+    --sky: #CAF0F8; --purple: #D8B4FE; --ink: #5A4A6F;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent }
+  html, body {
+    width:100%; min-height:100vh;
+    font-family: "PingFang SC","Microsoft YaHei",sans-serif;
+    overflow-x:hidden; color:var(--ink); touch-action:manipulation;
+  }
+  body {
+    background: linear-gradient(180deg,#FFE4EC 0%,#F3E8FF 30%,#E0F7FA 60%,#FFF8E1 100%);
+    background-attachment:fixed; position:relative; min-height:100vh; overflow:hidden;
+  }
+
+  /* ===== 背景装饰 ===== */
+  .floating-bg { position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden }
+  .decor { position:absolute; animation: floatX 6s ease-in-out infinite; opacity:.7; font-size:24px }
+  @keyframes floatX { 0%,100% { transform: translateY(0) rotate(0) } 50% { transform: translateY(-20px) rotate(10deg) } }
+  .cloud { position:absolute; background:rgba(255,255,255,.85); border-radius:50%; filter: blur(2px); animation: drift 20s linear infinite }
+  .cloud::before, .cloud::after { content:''; position:absolute; background:inherit; border-radius:50% }
+  .cloud.c1 { width:80px; height:30px; top:10%; animation-duration:25s }
+  .cloud.c1::before { width:40px; height:40px; top:-15px; left:10px }
+  .cloud.c1::after { width:35px; height:35px; top:-10px; right:10px }
+  .cloud.c2 { width:60px; height:22px; top:25%; animation-duration:30s; animation-delay:-8s; transform: scale(.8) }
+  .cloud.c2::before { width:30px; height:30px; top:-12px; left:8px }
+  .cloud.c2::after { width:25px; height:25px; top:-8px; right:8px }
+  .cloud.c3 { width:50px; height:18px; top:60%; animation-duration:22s; animation-delay:-15s; transform: scale(.7) }
+  .cloud.c3::before { width:25px; height:25px; top:-10px; left:6px }
+  .cloud.c3::after { width:20px; height:20px; top:-6px; right:6px }
+  @keyframes drift { 0% { left: -100px } 100% { left: calc(100vw + 100px) } }
+
+  /* ===== 字幕条 ===== */
+  .marquee-wrap {
+    position:relative; z-index:5; width:100%; padding:14px 0;
+    background: linear-gradient(90deg, rgba(255,182,193,.6), rgba(230,230,250,.6), rgba(184,242,230,.6));
+    backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+    border-bottom: 2px dashed rgba(255,143,171,.4);
+    overflow: hidden; margin-top: env(safe-area-inset-top, 0);
+  }
+  .marquee-track { display:flex; gap:60px; white-space:nowrap; animation: scrollL 20s linear infinite }
+  .marquee-track .item {
+    display:inline-flex; align-items:center; gap:8px;
+    font-size:18px; font-weight:700; color:var(--ink);
+    text-shadow: 2px 2px 0 #fff, -1px -1px 0 #fff; letter-spacing:1px;
+  }
+  .marquee-track .item .emoji { font-size: 22px }
+  .marquee-wrap:hover .marquee-track { animation-play-state: paused }
+  @keyframes scrollL { 0% { transform: translateX(0) } 100% { transform: translateX(-50%) } }
+
+  /* ===== 舞台主体 ===== */
+  .stage {
+    position:relative; z-index:2; width:100%;
+    min-height: calc(100vh - 56px);
+    display:flex; align-items:flex-end; justify-content:center;
+    padding: 10px 10px 30px;
+  }
+  .title {
+    position:absolute; top:28px; left:50%; transform: translateX(-50%);
+    text-align:center; z-index:3; width:90%;
+  }
+  .title h1 {
+    font-size: clamp(22px, 5.5vw, 32px);
+    background: linear-gradient(90deg, #FF6B9D, #C084FC, #60A5FA);
+    -webkit-background-clip:text; background-clip:text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(2px 2px 0 rgba(255,255,255,.8));
+    letter-spacing: 2px;
+    display:inline-block; animation: wiggleT 3s ease-in-out infinite;
+  }
+  .title p { margin-top:6px; font-size: clamp(12px, 3vw, 14px); color:#8B7A9E; font-weight:600 }
+  @keyframes wiggleT { 0%,100% { transform: rotate(-2deg) } 50% { transform: rotate(2deg) } }
+
+  .char-row {
+    position:relative; width:100%; max-width:860px;
+    height: clamp(380px, 78vh, 620px);
+    display:flex; align-items:flex-end; justify-content:space-around; gap:4px;
+  }
+
+  .char {
+    position:relative;
+    width: clamp(130px, 30vw, 260px);
+    height: 100%;
+    cursor: pointer;
+    transition: transform .3s ease;
+  }
+  .char:hover { transform: translateY(-8px) scale(1.03) }
+  .char:active { transform: scale(.97) }
+
+  .sway {
+    animation: swayBody 3.4s ease-in-out infinite;
+    transform-origin: 50% 92%;
+    width:100%; height:100%;
+    position: relative;
+  }
+  .char.mochou .sway { animation-delay: -.4s }
+  .char.jingwen .sway { animation-delay: -1s }
+  .char.he .sway { animation-delay: -1.8s }
+  @keyframes swayBody {
+    0%,100% { transform: rotateZ(-3deg) translateY(0) }
+    50%    { transform: rotateZ(3deg)  translateY(-5px) }
+  }
+  .char.clicked .sway { animation: hopPop .75s cubic-bezier(.3,1.6,.6,1) }
+  @keyframes hopPop {
+    0%  { transform: translateY(0) rotateZ(0) }
+    30% { transform: translateY(-40px) rotateZ(-10deg) scale(1.06) }
+    60% { transform: translateY(0) rotateZ(7deg) scale(.98) }
+    100%{ transform: translateY(0) rotateZ(0) }
+  }
+
+  /* ===== AI 角色图 ===== */
+  .char-img-wrap {
+    position: relative;
+    width: 100%; height: 100%;
+    display: flex; align-items: flex-end; justify-content: center;
+  }
+  .char-img {
+    width: 100%; height: 100%;
+    object-fit: contain;
+    object-position: bottom center;
+    border: 0 !important;
+    outline: 0 !important;
+    /* 白底变透明 —— 叠乘混合模式 + 柔光阴影 */
+    mix-blend-mode: multiply;
+    /* 紧贴角色身体的窄竖椭圆mask：彻底切掉四周白色画布矩形，只保留角色本身 */
+    -webkit-mask-image: radial-gradient(ellipse 82% 98% at 50% 54%,
+      #000 66%,
+      rgba(0,0,0,0.9) 74%,
+      rgba(0,0,0,0.3) 82%,
+      transparent 88%);
+    mask-image: radial-gradient(ellipse 82% 98% at 50% 54%,
+      #000 66%,
+      rgba(0,0,0,0.9) 74%,
+      rgba(0,0,0,0.3) 82%,
+      transparent 88%);
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
+    filter:
+      drop-shadow(0 8px 18px rgba(170, 140, 210, 0.22))
+      drop-shadow(0 2px 4px rgba(255, 160, 190, 0.2));
+    animation: breathe 3.8s ease-in-out infinite;
+  }
+  @keyframes breathe {
+    0%,100% { filter: drop-shadow(0 8px 18px rgba(170, 140, 210, 0.22)) drop-shadow(0 2px 4px rgba(255, 160, 190, 0.2)) }
+    50%     { filter: drop-shadow(0 12px 24px rgba(170, 140, 210, 0.35)) drop-shadow(0 3px 6px rgba(255, 160, 190, 0.32)) }
+  }
+  .char.jingwen .char-img {
+    /* 静雯是最大的 */
+    transform: scale(1.06);
+    animation: breathe 3.8s ease-in-out infinite, haloPulse 3s ease-in-out infinite;
+  }
+  @keyframes haloPulse {
+    0%,100% { filter:
+      drop-shadow(0 8px 20px rgba(255, 140, 190, 0.35))
+      drop-shadow(0 0 24px rgba(255, 180, 220, 0.55))
+      drop-shadow(0 2px 4px rgba(255, 160, 190, 0.3));
+    }
+    50%     { filter:
+      drop-shadow(0 14px 30px rgba(255, 140, 190, 0.55))
+      drop-shadow(0 0 34px rgba(255, 180, 220, 0.85))
+      drop-shadow(0 3px 6px rgba(255, 160, 190, 0.4));
+    }
+  }
+
+  /* 静雯 C 位光环 */
+  .char.jingwen {
+    z-index: 4;
+    position: relative;
+  }
+  .char.jingwen::before {
+    content:''; position:absolute; pointer-events: none;
+    top: -6%; left: -14%;
+    width: 128%; height: 110%;
+    background:
+      radial-gradient(circle at 50% 40%, rgba(255,200,230,.55) 0%, rgba(255,180,215,.3) 20%, transparent 58%),
+      radial-gradient(circle at 50% 40%, rgba(255,255,255,.4), transparent 60%);
+    animation: halo 3.2s ease-in-out infinite;
+  }
+  @keyframes halo { 0%,100% { transform: scale(1); opacity:.75 } 50% { transform: scale(1.15); opacity: 1 } }
+
+  /* ===== 气泡（与角色一起放在.sway内，紧贴角色头顶，不飘远） ===== */
+  .bubble {
+    position:absolute;
+    top: 16%;   /* 角色头顶大约在容器高度 16~20% 位置（因为脚在底部对齐） */
+    left:50%;
+    transform: translateX(-50%) translateY(8px) scale(0);
+    transform-origin: 50% 100%;
+    background:#fff; border:3px solid var(--pink-deep);
+    border-radius: 22px; padding:10px 18px;
+    font-size: clamp(13px, 3.2vw, 16px); font-weight:800; color: var(--pink-deep);
+    white-space: nowrap;
+    box-shadow: 0 6px 20px rgba(255,143,171,.35), inset 0 -3px 0 #FFE4EC;
+    opacity:0; pointer-events: none;
+    transition: all .35s cubic-bezier(.34,1.56,.64,1); z-index:10;
+  }
+  .bubble::after {
+    content:''; position:absolute; bottom:-10px; left:50%; transform:translateX(-50%);
+    border-left:10px solid transparent; border-right:10px solid transparent; border-top:12px solid var(--pink-deep);
+  }
+  .bubble::before {
+    content:''; position:absolute; bottom:-5px; left:50%; transform:translateX(-50%);
+    border-left:7px solid transparent; border-right:7px solid transparent; border-top:9px solid #fff; z-index:1;
+  }
+  .bubble.show {
+    opacity:1;
+    transform: translateX(-50%) translateY(-34px) scale(1);  /* 只往上抬34px，紧贴头顶 */
+  }
+  .sparkle { position:absolute; top:0; left:0; pointer-events:none; font-size:14px; opacity:0 }
+
+  /* 名牌 */
+  .name-tag {
+    position:absolute; left:50%; transform: translateX(-50%);
+    bottom: -2%;
+    font-size: clamp(11px, 2.6vw, 13px);
+    font-weight:800; color:#fff;
+    padding: 5px 16px; border-radius: 14px;
+    border: 2px solid #fff; white-space: nowrap;
+    z-index: 8;
+    box-shadow: 0 4px 10px rgba(0,0,0,.15), 0 0 12px rgba(255,255,255,.5);
+  }
+  .name-tag.mochou { background: linear-gradient(135deg,#6366F1,#A78BFA) }
+  .name-tag.jingwen { background: linear-gradient(135deg,#EC4899,#C084FC) }
+  .name-tag.he { background: linear-gradient(135deg,#10B981,#38BDF8) }
+
+  /* 影子 */
+  .shadow {
+    position:absolute; bottom: 1%; left:50%; transform:translateX(-50%);
+    width: 60%; height: 14px;
+    background: radial-gradient(ellipse, rgba(90, 60, 130, 0.28), transparent 70%);
+    border-radius: 50%;
+    animation: shadowPulse 3.4s ease-in-out infinite;
+    z-index: -1;
+    filter: blur(1px);
+  }
+  @keyframes shadowPulse {
+    0%,100% { transform: translateX(-50%) scaleX(1); opacity:.55 }
+    50%     { transform: translateX(-50%) scaleX(.78); opacity:.3 }
+  }
+
+  /* ===== 音乐按钮 ===== */
+  .music-btn {
+    position:fixed;
+    top: calc(env(safe-area-inset-top, 0) + 80px);
+    right:16px;
+    width:50px; height:50px; border-radius:50%;
+    background: linear-gradient(135deg, #FFB6C1, #C084FC);
+    border: 3px solid #fff;
+    box-shadow: 0 6px 18px rgba(192,132,252,.45);
+    display:flex; align-items:center; justify-content:center;
+    font-size:22px; cursor:pointer; z-index:20;
+    transition: transform .25s ease;
+  }
+  .music-btn:hover { transform: scale(1.1) }
+  .music-btn.playing { animation: spin 3s linear infinite }
+  @keyframes spin { from { transform: rotate(0) } to { transform: rotate(360deg) } }
+  .music-btn.muted::after {
+    content:''; position:absolute; top:50%; left:50%;
+    width:110%; height:3px; background:#EF4444; border-radius:2px;
+    transform: translate(-50%,-50%) rotate(-45deg);
+  }
+
+  /* ===== 小屏适配 ===== */
+  @media (max-width: 540px) {
+    .stage { padding: 10px 4px 30px }
+    .char-row { height: clamp(360px, 74vh, 540px) }
+    .marquee-track .item { font-size: 15px }
+    .marquee-track { gap: 40px }
+    .music-btn { width:44px; height:44px; font-size:18px; top: calc(env(safe-area-inset-top, 0) + 72px); right: 12px }
+    .char { width: clamp(118px, 31vw, 240px) }
+  }
+  @media (max-width: 380px) {
+    .char-row { height: 64vh }
+    .title { top: 16px }
+    .char { width: 31% }
+  }
+  button { border:none; background:none; font-family:inherit; cursor:pointer }
+</style>
+</head>
+<body>
+
+<div class="floating-bg" aria-hidden="true">
+  <div class="cloud c1"></div><div class="cloud c2"></div><div class="cloud c3"></div>
+  <div class="decor" style="top:15%;left:8%;animation-delay:0s">🌸</div>
+  <div class="decor" style="top:40%;right:10%;animation-delay:-1.2s;font-size:20px">⭐</div>
+  <div class="decor" style="top:70%;left:12%;animation-delay:-2s;font-size:22px">💖</div>
+  <div class="decor" style="top:22%;right:25%;animation-delay:-3s">🎀</div>
+  <div class="decor" style="top:80%;right:18%;animation-delay:-1.6s;font-size:18px">🌈</div>
+  <div class="decor" style="top:50%;left:5%;animation-delay:-2.4s;font-size:16px">✨</div>
+  <div class="decor" style="top:8%;right:5%;animation-delay:-.8s;font-size:18px">☁️</div>
+</div>
+
+<div class="marquee-wrap">
+  <div class="marquee-track" id="marqueeTrack">
+    <span class="item"><span class="emoji">🌷</span>莫愁莫愁，大家莫愁~~</span>
+    <span class="item"><span class="emoji">🌿</span>小禾很专业，办事你放心~~~</span>
+    <span class="item"><span class="emoji">🌟</span>我们的静雯最厉害~~~</span>
+    <span class="item"><span class="emoji">💖</span>团队齐心，其利断金！</span>
+    <span class="item"><span class="emoji">🎀</span>加油加油，一起冲鸭～</span>
+    <span class="item"><span class="emoji">🌈</span>莫愁莫愁，大家莫愁~~</span>
+    <span class="item"><span class="emoji">🌟</span>小禾很专业，办事你放心~~~</span>
+    <span class="item"><span class="emoji">💫</span>我们的静雯最厉害~~~</span>
+  </div>
+</div>
+
+<button class="music-btn playing" id="musicBtn" aria-label="音乐开关">🎵</button>
+
+<div class="stage">
+  <div class="title">
+    <h1>🌈 可 爱 天 团 加 油 站 ✨</h1>
+    <p>点一点小伙伴们，看看他们有什么话说呀～</p>
+  </div>
+
+  <div class="char-row">
+
+    <!-- ============= 莫愁（左） ============= -->
+    <div class="char mochou" data-name="莫愁">
+      <div class="sway">
+        <div class="char-img-wrap">
+          <img class="char-img" src="assets/char_mochou.jpg" alt="莫愁 - 计算机高手" loading="eager" draggable="false">
+        </div>
+        <span class="name-tag mochou">💙 莫愁</span>
+        <div class="shadow"></div>
+        <div class="bubble">我是莫愁~ 🤓 编程超厉害！</div>
+      </div>
+    </div>
+
+    <!-- ============= 静雯（C位） ============= -->
+    <div class="char jingwen" data-name="静雯">
+      <div class="sway">
+        <div class="char-img-wrap">
+          <img class="char-img" src="assets/char_jingwen.jpg" alt="静雯 - 最厉害" loading="eager" draggable="false">
+        </div>
+        <span class="name-tag jingwen">💖 静雯</span>
+        <div class="shadow"></div>
+        <div class="bubble">静雯超厉害！✨</div>
+      </div>
+    </div>
+
+    <!-- ============= 小禾（右） ============= -->
+    <div class="char he" data-name="小禾">
+      <div class="sway">
+        <div class="char-img-wrap">
+          <img class="char-img" src="assets/char_xiaohe.jpg" alt="小禾 - 很帅很专业" loading="eager" draggable="false">
+        </div>
+        <span class="name-tag he">💚 小禾</span>
+        <div class="shadow"></div>
+        <div class="bubble">我是小禾~ 🌿 放心交给我！</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+/* ===== 1. 无缝滚动字幕 ===== */
+(function(){ const t = document.getElementById('marqueeTrack'); t.innerHTML += t.innerHTML; })();
+
+/* ===== 2. 音效系统 ===== */
+const SoundFX = (() => {
+  let ctx = null, bgmOn = false, bgmTimer = null;
+  function ensureCtx(){
+    if(!ctx){ const AC = window.AudioContext || window.webkitAudioContext; if(AC) ctx = new AC(); }
+    if(ctx && ctx.state === 'suspended') ctx.resume(); return ctx;
+  }
+  function playClick(p=1){
+    const c = ensureCtx(); if(!c) return;
+    const n = c.currentTime;
+    const o = c.createOscillator(), g = c.createGain();
+    o.type = 'triangle';
+    o.frequency.setValueAtTime(660*p, n);
+    o.frequency.exponentialRampToValueAtTime(1320*p, n+0.12);
+    g.gain.setValueAtTime(0.0001, n);
+    g.gain.exponentialRampToValueAtTime(0.25, n+0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, n+0.35);
+    o.connect(g).connect(c.destination); o.start(n); o.stop(n+0.4);
+    const o2 = c.createOscillator(), g2 = c.createGain();
+    o2.type = 'sine';
+    o2.frequency.setValueAtTime(990*p, n+0.08);
+    g2.gain.setValueAtTime(0.0001, n+0.08);
+    g2.gain.exponentialRampToValueAtTime(0.15, n+0.12);
+    g2.gain.exponentialRampToValueAtTime(0.0001, n+0.3);
+    o2.connect(g2).connect(c.destination); o2.start(n+0.08); o2.stop(n+0.32);
+  }
+  function playCharClick(name){
+    const map = { '莫愁': 0.85, '静雯': 1.38, '小禾': 1.12 };
+    playClick(map[name] || 1);
+  }
+  const melody = [
+    [523.25,0.35],[659.25,0.35],[783.99,0.35],[659.25,0.35],
+    [523.25,0.35],[783.99,0.35],[880.00,0.7],
+    [698.46,0.35],[783.99,0.35],[880.00,0.35],[783.99,0.35],
+    [659.25,0.35],[698.46,0.35],[523.25,0.7]
+  ];
+  let idx = 0;
+  function playNote(f, d, w){
+    const c = ensureCtx(); if(!c) return;
+    const o = c.createOscillator(), g = c.createGain();
+    o.type = 'sine'; o.frequency.setValueAtTime(f, w);
+    g.gain.setValueAtTime(0.0001, w);
+    g.gain.exponentialRampToValueAtTime(0.05, w+0.03);
+    g.gain.exponentialRampToValueAtTime(0.0001, w+d);
+    o.connect(g).connect(c.destination); o.start(w); o.stop(w+d+0.02);
+    const o2 = c.createOscillator(), g2 = c.createGain();
+    o2.type = 'triangle'; o2.frequency.setValueAtTime(f*0.5, w);
+    g2.gain.setValueAtTime(0.0001, w);
+    g2.gain.exponentialRampToValueAtTime(0.03, w+0.03);
+    g2.gain.exponentialRampToValueAtTime(0.0001, w+d);
+    o2.connect(g2).connect(c.destination); o2.start(w); o2.stop(w+d+0.02);
+  }
+  function next(){
+    if(!bgmOn) return;
+    const c = ensureCtx(); if(!c) return;
+    const [f,d] = melody[idx % melody.length];
+    playNote(f, d, c.currentTime); idx++;
+    bgmTimer = setTimeout(next, d*1000);
+  }
+  return {
+    ensureCtx, playClick, playCharClick,
+    startBGM(){ if(bgmOn) return; ensureCtx(); bgmOn = true; idx = 0; next(); },
+    stopBGM(){ bgmOn = false; if(bgmTimer){ clearTimeout(bgmTimer); bgmTimer = null; } },
+    isBGMOn(){ return bgmOn; }
+  };
+})();
+
+/* ===== 3. 点击交互 ===== */
+(function(){
+  const chars = document.querySelectorAll('.char');
+  const timers = {};
+  chars.forEach(ch => {
+    ch.addEventListener('click', (e) => {
+      SoundFX.ensureCtx();
+      SoundFX.playCharClick(ch.dataset.name);
+      if(!SoundFX.isBGMOn() && !musicBtn.classList.contains('muted')) SoundFX.startBGM();
+
+      ch.classList.remove('clicked'); void ch.offsetWidth; ch.classList.add('clicked');
+      setTimeout(() => ch.classList.remove('clicked'), 800);
+
+      const bub = ch.querySelector('.bubble');
+      bub.textContent = {
+        '莫愁': '我是莫愁~ 🤓 编程超厉害！',
+        '静雯': '静雯超厉害！✨',
+        '小禾': '我是小禾~ 🌿 放心交给我！'
+      }[ch.dataset.name] || '嗨嗨~';
+      bub.classList.add('show');
+      if(timers[ch.dataset.name]) clearTimeout(timers[ch.dataset.name]);
+      timers[ch.dataset.name] = setTimeout(() => bub.classList.remove('show'), 2000);
+
+      sparkles(e.currentTarget);
+    });
+  });
+  function sparkles(t){
+    const r = t.getBoundingClientRect();
+    const sym = ['✨','💫','⭐','💖','🌟','💕','🌸','🎀'];
+    for(let i = 0; i < 9; i++){
+      const d = document.createElement('div');
+      d.className = 'sparkle';
+      d.textContent = sym[Math.floor(Math.random() * sym.length)];
+      document.body.appendChild(d);
+      const sx = r.left + r.width/2 + (Math.random()-.5)*r.width*0.3;
+      const sy = r.top + r.height*0.3;
+      const a = (Math.PI*2*i)/9 + (Math.random()-.5)*0.4;
+      const dist = 80 + Math.random()*70;
+      const ex = sx + Math.cos(a)*dist;
+      const ey = sy + Math.sin(a)*dist - 36;
+      d.style.left = sx + 'px'; d.style.top = sy + 'px';
+      d.style.fontSize = (14 + Math.random()*14) + 'px';
+      d.animate([
+        { transform: 'translate(0,0) scale(.4) rotate(0)', opacity: 1 },
+        { transform: `translate(${ex-sx}px,${ey-sy}px) scale(1.6) rotate(${Math.random()*360}deg)`, opacity: 0 }
+      ], { duration: 960, easing: 'cubic-bezier(.2,.8,.3,1)' });
+      setTimeout(() => d.remove(), 1000);
+    }
+  }
+})();
+
+/* ===== 4. 音乐按钮 ===== */
+const musicBtn = document.getElementById('musicBtn');
+musicBtn.addEventListener('click', () => {
+  SoundFX.ensureCtx();
+  if(SoundFX.isBGMOn()){
+    SoundFX.stopBGM();
+    musicBtn.classList.remove('playing');
+    musicBtn.classList.add('muted');
+  } else {
+    SoundFX.startBGM();
+    musicBtn.classList.add('playing');
+    musicBtn.classList.remove('muted');
+  }
+  SoundFX.playClick(0.9);
+});
+
+window.addEventListener('touchstart', function f(){ SoundFX.ensureCtx(); window.removeEventListener('touchstart', f); }, { once:true, passive:true });
+window.addEventListener('click', function f(){ SoundFX.ensureCtx(); window.removeEventListener('click', f); }, { once:true });
+</script>
+</body>
+</html>
