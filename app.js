@@ -14,6 +14,8 @@ const schedule = {
     { day: 3, slot: 1, name: "操作系统实现技术", room: "A4N205 · 禄口", teacher: "耿必鹏", weeks: "16–20 周" },
     { day: 4, slot: 1, name: "计算机网络原理", room: "A4N403 · 禄口", teacher: "欧历云", weeks: "2–11 周" },
     { day: 1, slot: 2, name: "数据库实现", room: "机房 7 · 禄口", teacher: "李莹", weeks: "5–12 周" },
+    { day: 1, slot: 3, name: "数据库实现（上机）", room: "等信息中心安排", teacher: "李莹", weeks: "6–12 周" },
+    { day: 1, slot: 1, name: "数据库实现（上机）", room: "等信息中心安排", teacher: "李莹", weeks: "第 12 周" },
   ],
   "2025-2026-2": [],
 };
